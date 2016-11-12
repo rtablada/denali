@@ -5,7 +5,7 @@ import { spawn } from 'child_process';
 import ui from '../lib/cli/ui';
 import Command from '../lib/cli/command';
 import Project from '../lib/cli/project';
-import assign from 'lodash/assign';
+import buildEnvs from '../lib/utils/build-envs';
 import createDebug from 'debug';
 
 const debug = createDebug('denali:commands:server');
@@ -122,11 +122,6 @@ export default class ServerCommand extends Command {
 
   startServer(dir) {
     let args = [ 'app/index.js' ];
-    let defaultEnvs = {
-      PORT: this.port,
-      DENALI_ENV: this.project.environment,
-      NODE_ENV: this.project.environment
-    };
     if (this.debug) {
       args.unshift('--inspect', '--debug-brk');
     }
@@ -138,7 +133,7 @@ export default class ServerCommand extends Command {
     this.server = spawn(process.execPath, args, {
       cwd: dir,
       stdio: [ 'pipe', process.stdout, process.stderr ],
-      env: assign({}, defaultEnvs, process.env)
+      env: buildEnvs(this, this.project)
     });
     this.server.on('error', (error) => {
       ui.error('Unable to start your application:');
