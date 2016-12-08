@@ -5,7 +5,6 @@ import { spawn } from 'child_process';
 import ui from '../lib/cli/ui';
 import Command from '../lib/cli/command';
 import Project from '../lib/cli/project';
-import buildEnvs from '../lib/utils/build-envs';
 import createDebug from 'debug';
 
 const debug = createDebug('denali:commands:server');
@@ -133,7 +132,7 @@ export default class ServerCommand extends Command {
     this.server = spawn(process.execPath, args, {
       cwd: dir,
       stdio: [ 'pipe', process.stdout, process.stderr ],
-      env: buildEnvs(this, this.project)
+      env: this.envs(this.project)
     });
     this.server.on('error', (error) => {
       ui.error('Unable to start your application:');
